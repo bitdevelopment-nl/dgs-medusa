@@ -6,6 +6,10 @@ import { getFullAdminPath } from "../utils/get-admin-path"
 
 export const supportedLanguages = [
   {
+    locale: "nl",
+    name: "Nederlands",
+  },
+  {
     locale: "en",
     name: "English",
   },
@@ -105,7 +109,7 @@ void i18n
       loadPath: pathToLoadFrom,
     },
     supportedLngs: supportedLanguages.map((l) => l.locale),
-    fallbackLng: "en",
+    fallbackLng: "nl",
     returnNull: false,
     debug: true,
     interpolation: {

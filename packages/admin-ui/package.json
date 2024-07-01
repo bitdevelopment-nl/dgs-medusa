@@ -71,6 +71,7 @@
     "i18next-browser-languagedetector": "^7.0.1",
     "i18next-http-backend": "^2.2.1",
     "md5": "^2.3.0",
+    "medusa-plugin-sentry-ui": "^0.2.4",
     "medusa-react": "^9.0.17",
     "mini-css-extract-plugin": "^2.7.6",
     "moment": "^2.29.4",

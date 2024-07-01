@@ -1,74 +1,98 @@
 import FormValidator from "../../../../utils/form-validator"
-import { NestedForm } from "../../../../utils/nested-form"
+import {NestedForm} from "../../../../utils/nested-form"
 import InputField from "../../../molecules/input"
 
 export type DimensionsFormType = {
-  length: number | null
-  width: number | null
-  height: number | null
-  weight: number | null
+    length: number | null
+    width: number | null
+    height: number | null
+    weight: number | null,
+    diameter: number | null,
 }
 
 type DimensionsFormProps = {
-  form: NestedForm<DimensionsFormType>
+    form: NestedForm<DimensionsFormType>
 }
+
+const validateDimension = {
+    positive: v => parseInt(v) > 0,
+};
+
+const validateWeight = {
+    positive: v => parseInt(v) > 0,
+};
 
 /**
  * Re-usable nested form used to submit dimensions information for products and their variants.
  * @example
  * <DimensionsForm form={nestedForm(form, "dimensions")} />
  */
-const DimensionsForm = ({ form }: DimensionsFormProps) => {
-  const {
-    register,
-    path,
-    formState: { errors },
-  } = form
+const DimensionsForm = ({form}: DimensionsFormProps) => {
+    const {
+        register,
+        path,
+        formState: {errors},
+    } = form
 
-  return (
-    <div className="gap-x-large grid grid-cols-4">
-      <InputField
-        label="Width"
-        placeholder="100..."
-        type="number"
-        {...register(path("width"), {
-          min: FormValidator.nonNegativeNumberRule("Width"),
-          valueAsNumber: true,
-        })}
-        errors={errors}
-      />
-      <InputField
-        label="Length"
-        placeholder="100..."
-        type="number"
-        {...register(path("length"), {
-          min: FormValidator.nonNegativeNumberRule("Length"),
-          valueAsNumber: true,
-        })}
-        errors={errors}
-      />
-      <InputField
-        label="Height"
-        placeholder="100..."
-        type="number"
-        {...register(path("height"), {
-          min: FormValidator.nonNegativeNumberRule("Height"),
-          valueAsNumber: true,
-        })}
-        errors={errors}
-      />
-      <InputField
-        label="Weight"
-        placeholder="100..."
-        type="number"
-        {...register(path("weight"), {
-          min: FormValidator.nonNegativeNumberRule("Weight"),
-          valueAsNumber: true,
-        })}
-        errors={errors}
-      />
-    </div>
-  )
+    return (
+        <div className="gap-large grid grid-cols-3">
+            <InputField
+                label="Breedte (in cm)"
+                placeholder="100..."
+                type="text"
+                {...register(path("width"), {
+                    validate: validateDimension,
+                    setValueAs: (value) => value * 10,
+                    pattern: /([0-9]+)([.,][0-9]{0,2})?/
+                })}
+                errors={errors}
+            />
+            <InputField
+                label="Lengte (in cm)"
+                placeholder="100..."
+                type="text"
+                {...register(path("length"), {
+                    validate: validateDimension,
+                    setValueAs: (value) => value * 10,
+                    pattern: /([0-9]+)([.,][0-9]{0,2})?/
+                })}
+                errors={errors}
+            />
+            <InputField
+                label="Hoogte (in cm)"
+                placeholder="100..."
+                type="text"
+                {...register(path("height"), {
+                    validate: validateDimension,
+                    setValueAs: (value) => value * 10,
+                    pattern: /([0-9]+)([.,][0-9]{0,2})?/
+                })}
+                errors={errors}
+            />
+            <InputField
+                label="Diameter (in cm)"
+                placeholder="100..."
+                type="text"
+                {...register(path("diameter"), {
+                    validate: validateDimension,
+                    setValueAs: (value) => value * 10,
+                    pattern: /([0-9]+)([.,][0-9]{0,2})?/
+                })}
+                errors={errors}
+            />
+            <InputField
+                label="Gewicht (in gram)"
+                placeholder="100..."
+                type="text"
+                {...register(path("weight"), {
+                    validate: validateWeight,
+                    setValueAs: (value) => parseInt(value),
+                    pattern: /([0-9]+)/
+                })}
+                errors={errors}
+            />
+        </div>
+    )
 }
 
 export default DimensionsForm
