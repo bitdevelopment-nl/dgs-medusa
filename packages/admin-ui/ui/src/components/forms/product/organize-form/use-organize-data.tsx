@@ -30,32 +30,12 @@ const useOrganizeData = () => {
     }
   )
 
-  const productTypeOptions = useMemo(() => {
-    return (
-      product_types?.map(({ id, value }) => ({
-        value: id,
-        label: value,
-      })) || []
-    )
-  }, [product_types])
-
-  const collectionOptions = useMemo(() => {
-    return (
-      collections?.map(({ id, title }) => ({
-        value: id,
-        label: title,
-      })) || []
-    )
-  }, [collections])
-
   const categoriesOptions: NestedMultiselectOption[] | undefined = useMemo(
     () => categories?.map(transformCategoryToNestedFormOptions),
     [categories]
   )
 
   return {
-    productTypeOptions,
-    collectionOptions,
     categoriesOptions,
   }
 }

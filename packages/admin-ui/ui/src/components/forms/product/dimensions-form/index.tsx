@@ -15,11 +15,11 @@ type DimensionsFormProps = {
 }
 
 const validateDimension = {
-    positive: v => parseInt(v) > 0,
+    positive: (v: string) => parseInt(v) >= 0,
 };
 
 const validateWeight = {
-    positive: v => parseInt(v) > 0,
+    positive: (v: string) => parseInt(v) >= 0,
 };
 
 /**
@@ -43,7 +43,6 @@ const DimensionsForm = ({form}: DimensionsFormProps) => {
                 {...register(path("width"), {
                     validate: validateDimension,
                     setValueAs: (value) => value * 10,
-                    pattern: /([0-9]+)([.,][0-9]{0,2})?/
                 })}
                 errors={errors}
             />
@@ -54,7 +53,6 @@ const DimensionsForm = ({form}: DimensionsFormProps) => {
                 {...register(path("length"), {
                     validate: validateDimension,
                     setValueAs: (value) => value * 10,
-                    pattern: /([0-9]+)([.,][0-9]{0,2})?/
                 })}
                 errors={errors}
             />
@@ -65,7 +63,6 @@ const DimensionsForm = ({form}: DimensionsFormProps) => {
                 {...register(path("height"), {
                     validate: validateDimension,
                     setValueAs: (value) => value * 10,
-                    pattern: /([0-9]+)([.,][0-9]{0,2})?/
                 })}
                 errors={errors}
             />
@@ -76,7 +73,7 @@ const DimensionsForm = ({form}: DimensionsFormProps) => {
                 {...register(path("diameter"), {
                     validate: validateDimension,
                     setValueAs: (value) => value * 10,
-                    pattern: /([0-9]+)([.,][0-9]{0,2})?/
+                    pattern: /([0-9]+)([.,][0-9]{0,2})?/,
                 })}
                 errors={errors}
             />
@@ -86,7 +83,7 @@ const DimensionsForm = ({form}: DimensionsFormProps) => {
                 type="text"
                 {...register(path("weight"), {
                     validate: validateWeight,
-                    setValueAs: (value) => parseInt(value),
+                    setValueAs: (value) => parseInt(value) ?? 0,
                     pattern: /([0-9]+)/
                 })}
                 errors={errors}

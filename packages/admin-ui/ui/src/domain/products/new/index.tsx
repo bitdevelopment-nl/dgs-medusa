@@ -1,18 +1,10 @@
-import {AdminPostProductsReq, ProductVariant} from "@medusajs/medusa"
-import {useAdminCreateProduct, useMedusa} from "medusa-react"
+import {AdminPostProductsReq} from "@medusajs/medusa"
+import {useAdminCreateProduct} from "medusa-react"
 import {useForm, useWatch} from "react-hook-form"
-import DimensionsForm, {
-    DimensionsFormType,
-} from "../../../components/forms/product/dimensions-form"
-import GeneralForm, {
-    GeneralFormType,
-} from "../../../components/forms/product/general-form"
-import MediaForm, {
-    MediaFormType,
-} from "../../../components/forms/product/media-form"
-import ThumbnailForm, {
-    ThumbnailFormType,
-} from "../../../components/forms/product/thumbnail-form"
+import DimensionsForm, {DimensionsFormType,} from "../../../components/forms/product/dimensions-form"
+import GeneralForm, {GeneralFormType,} from "../../../components/forms/product/general-form"
+import MediaForm, {MediaFormType,} from "../../../components/forms/product/media-form"
+import ThumbnailForm, {ThumbnailFormType,} from "../../../components/forms/product/thumbnail-form"
 import {FormImage, ProductStatus} from "../../../types/shared"
 
 import {useEffect} from "react"
@@ -28,9 +20,11 @@ import {getErrorMessage} from "../../../utils/error-messages"
 import {prepareImages} from "../../../utils/images"
 import {nestedForm} from "../../../utils/nested-form"
 import OrganizeForm, {OrganizeFormType} from "../../../components/forms/product/organize-form";
+import StockPriceForm, {StockPriceFormType} from "../../../components/forms/de-geslepen-steen/product/stock-price-form";
 
 type NewProductForm = {
     general: GeneralFormType,
+    stockPrice: StockPriceFormType,
     organize: OrganizeFormType,
     dimensions: DimensionsFormType
     thumbnail: ThumbnailFormType
@@ -49,11 +43,6 @@ const NewProduct = ({onClose}: Props) => {
     const {mutate} = useAdminCreateProduct()
     const navigate = useNavigate()
     const notification = useNotification()
-
-    const watchedCustoms = useWatch({
-        control: form.control,
-        name: "customs",
-    })
 
     const watchedDimensions = useWatch({
         control: form.control,
@@ -110,9 +99,7 @@ const NewProduct = ({onClose}: Props) => {
                     notification(t("new-error", "Error"), errorMessage, "error")
                     return
                 }
-                const urls = preppedImages.map((image) => image.url)
-
-                payload.images = urls
+                payload.images = preppedImages.map((image) => image.url)
             }
 
             if (data.thumbnail?.images?.length) {
@@ -147,62 +134,14 @@ const NewProduct = ({onClose}: Props) => {
 
             mutate(payload, {
                 onSuccess: ({product}) => {
-                    createStockLocationsForVariants(
-                        product.variants,
-                        []
-                    ).then(() => {
                         closeAndReset()
                         navigate(`/a/products/${product.id}`)
-                    })
                 },
                 onError: (err) => {
                     notification(t("new-error", "Error"), getErrorMessage(err), "error")
                 },
             })
         })
-
-    const {client} = useMedusa()
-
-    const createStockLocationsForVariants = async (
-        variants: ProductVariant[],
-        stockLocationsMap: Map<
-            string,
-            { stocked_quantity: number; location_id: string }[] | undefined
-        >
-    ) => {
-        await Promise.all(
-            variants
-                .map(async (variant) => {
-                    const optionsKey = variant.options
-                        .map((option) => option?.value || "")
-                        .sort()
-                        .join(",")
-
-                    const stock_locations = stockLocationsMap.get(optionsKey)
-                    if (!stock_locations?.length) {
-                        return
-                    }
-
-                    const inventory = await client.admin.variants.getInventory(variant.id)
-
-                    return await Promise.all(
-                        inventory.variant.inventory
-                            .map(async (item) => {
-                                return Promise.all(
-                                    stock_locations.map(async (stock_location) => {
-                                        client.admin.inventoryItems.createLocationLevel(item.id!, {
-                                            location_id: stock_location.location_id,
-                                            stocked_quantity: stock_location.stocked_quantity,
-                                        })
-                                    })
-                                )
-                            })
-                            .flat()
-                    )
-                })
-                .flat()
-        )
-    }
 
     return (
         <form className="w-full">
@@ -263,6 +202,9 @@ const NewProduct = ({onClose}: Props) => {
                                     />
                                 </div>
                                 <div className="my-xlarge">
+                                    <StockPriceForm form={nestedForm(form, "stockPrice")}/>
+                                </div>
+                                <div className="my-xlarge">
                                     <h3 className="inter-base-semibold mb-base">
                                         {t("new-dimensions", "Dimensions")}
                                     </h3>
@@ -314,9 +256,9 @@ const createPayload = (
         subtitle: data.general.subtitle || undefined,
         material: data.general.material || undefined,
         handle: data.general.handle,
-        discountable: false,
-        is_giftcard: false,
-        collection_id: data.organize.collection?.value,
+        discountable: false, // unused
+        is_giftcard: false, // unused
+        collection_id: undefined, // unused
         description: data.general.description || undefined,
         height: data.dimensions.height || undefined,
         length: data.dimensions.length || undefined,
@@ -324,12 +266,7 @@ const createPayload = (
         width: data.dimensions.width || undefined,
         hs_code: undefined, // unused
         mid_code: undefined, // unused
-        type: data.organize.type
-          ? {
-              value: data.organize.type.label,
-              id: data.organize.type.value,
-            }
-          : undefined,
+        type:  undefined, // unused
         tags: data.organize.tags
           ? data.organize.tags.map((t) => ({
               value: t,
@@ -346,10 +283,10 @@ const createPayload = (
         variants: [
             {
                 title: 'internal',
-                inventory_quantity: 0,
+                inventory_quantity: data.stockPrice.stock,
                 prices: [
                     {
-                        amount: 10,
+                        amount: data.stockPrice.price,
                         currency_code: 'eur'
                     }
                 ],
@@ -362,32 +299,6 @@ const createPayload = (
                 manage_inventory: true
             },
         ],
-        // origin_country: data.customs.origin_country?.value || undefined,
-        // options: data.variants.options.map((o) => ({
-        //   title: o.title,
-        // })),
-        // variants: data.variants.entries.map((v) => ({
-        //   title: v.general.title!,
-        //   material: v.general.material || undefined,
-        //   inventory_quantity: v.stock.inventory_quantity || 0,
-        //   prices: getVariantPrices(v.prices),
-        //   allow_backorder: v.stock.allow_backorder,
-        //   sku: v.stock.sku || undefined,
-        //   barcode: v.stock.barcode || undefined,
-        //   options: v.options.map((o) => ({
-        //     value: o.option?.value!,
-        //   })),
-        //   ean: v.stock.ean || undefined,
-        //   upc: v.stock.upc || undefined,
-        //   height: v.dimensions.height || undefined,
-        //   length: v.dimensions.length || undefined,
-        //   weight: v.dimensions.weight || undefined,
-        //   width: v.dimensions.width || undefined,
-        //   hs_code: v.customs.hs_code || undefined,
-        //   mid_code: v.customs.mid_code || undefined,
-        //   origin_country: v.customs.origin_country?.value || undefined,
-        //   manage_inventory: v.stock.manage_inventory,
-        // })),
         // @ts-ignore
         status: publish ? ProductStatus.PUBLISHED : ProductStatus.DRAFT,
     }
