@@ -274,6 +274,7 @@ const createPayload = (
         length: data.dimensions.length || undefined,
         weight: data.dimensions.weight || undefined,
         width: data.dimensions.width || undefined,
+        diameter: data.dimensions.diameter || undefined,
         hs_code: undefined, // unused
         mid_code: undefined, // unused
         type:  undefined, // unused

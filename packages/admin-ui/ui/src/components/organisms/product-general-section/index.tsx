@@ -176,8 +176,7 @@ const ProductDetails = ({product}: Props) => {
             />
             <Detail
                 title={t("product-general-section-diameter", "Diameter")}
-                // value={product.diameter ? `${product.diameter / 10} cm` : null}
-                value={null}
+                value={product.diameter ? `${product.diameter / 10} cm` : null}
             />
             <Detail
                 title="Gewicht"

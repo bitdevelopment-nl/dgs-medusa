@@ -73,7 +73,6 @@ const DimensionsForm = ({form}: DimensionsFormProps) => {
                 {...register(path("diameter"), {
                     validate: validateDimension,
                     setValueAs: (value) => value * 10,
-                    pattern: /([0-9]+)([.,][0-9]{0,2})?/,
                 })}
                 errors={errors}
             />
