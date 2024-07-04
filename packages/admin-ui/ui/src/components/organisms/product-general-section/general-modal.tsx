@@ -1,7 +1,4 @@
 import { useTranslation } from "react-i18next"
-import DiscountableForm, {
-  DiscountableFormType,
-} from "../../forms/product/discountable-form"
 import GeneralForm, { GeneralFormType } from "../../forms/product/general-form"
 import OrganizeForm, {
   OrganizeFormType,
@@ -12,13 +9,10 @@ import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import useEditProductActions from "../../../hooks/use-edit-product-actions"
 import { nestedForm } from "../../../utils/nested-form"
-import MetadataForm, {
-  getMetadataFormValues,
-  getSubmittableMetadata,
-  MetadataFormType,
-} from "../../forms/general/metadata-form"
 import Button from "../../fundamentals/button"
 import Modal from "../../molecules/modal"
+import StockPriceForm, {StockPriceFormType} from "../../forms/de-geslepen-steen/product/stock-price-form";
+import DimensionsForm, {DimensionsFormType} from "../../forms/product/dimensions-form";
 
 type Props = {
   product: Product
@@ -27,10 +21,10 @@ type Props = {
 }
 
 type GeneralFormWrapper = {
+  dimensions: DimensionsFormType
   general: GeneralFormType
   organize: OrganizeFormType
-  discountable: DiscountableFormType
-  metadata: MetadataFormType
+  stockPrice: StockPriceFormType
 }
 
 const GeneralModal = ({ product, open, onClose }: Props) => {
@@ -67,26 +61,29 @@ const GeneralModal = ({ product, open, onClose }: Props) => {
         // @ts-ignore
         description: data.general.description,
         // @ts-ignore
-        type: data.organize.type
-          ? {
-              id: data.organize.type.value,
-              value: data.organize.type.label,
-            }
-          : null,
-        // @ts-ignore
-        collection_id: data.organize.collection
-          ? data.organize.collection.value
-          : null,
-        // @ts-ignore
         tags: data.organize.tags
           ? data.organize.tags.map((t) => ({ value: t }))
           : null,
-
         categories: data.organize?.categories?.length
           ? data.organize.categories.map((id) => ({ id }))
           : [],
-        discountable: data.discountable.value,
-        metadata: getSubmittableMetadata(data.metadata),
+        height: data.dimensions.height || undefined,
+        length: data.dimensions.length || undefined,
+        weight: data.dimensions.weight || undefined,
+        width: data.dimensions.width || undefined,
+        variants: [
+          {
+            id: product.variants[0].id,
+            inventory_quantity: data.stockPrice.stock,
+            prices: [
+              {
+                id: product.variants[0].prices[0].id,
+                amount: data.stockPrice.price,
+                currency_code: product.variants[0].prices[0].currency_code
+              }
+            ],
+          },
+        ],
       },
       onReset
     )
@@ -106,47 +103,46 @@ const GeneralModal = ({ product, open, onClose }: Props) => {
         <form onSubmit={onSubmit}>
           <Modal.Content>
             <GeneralForm
-              form={nestedForm(form, "general")}
-              isGiftCard={product.is_giftcard}
+                form={nestedForm(form, "general")}
+                isGiftCard={product.is_giftcard}
             />
+            <div className="my-xlarge">
+              <StockPriceForm form={nestedForm(form, "stockPrice")}/>
+            </div>
+            <div className="my-xlarge">
+              <h3 className="inter-base-semibold mb-base">
+                {t("new-dimensions", "Dimensions")}
+              </h3>
+              <DimensionsForm form={nestedForm(form, "dimensions")}/>
+            </div>
             <div className="my-xlarge">
               <h2 className="inter-base-semibold mb-base">
                 Organize{" "}
                 {product.is_giftcard
-                  ? t("product-general-section-gift-card", "Gift Card")
-                  : t("product-general-section-product", "Product")}
+                    ? t("product-general-section-gift-card", "Gift Card")
+                    : t("product-general-section-product", "Product")}
               </h2>
-              <OrganizeForm form={nestedForm(form, "organize")} />
-            </div>
-            <DiscountableForm
-              form={nestedForm(form, "discountable")}
-              isGiftCard={product.is_giftcard}
-            />
-            <div className="mt-xlarge">
-              <h2 className="inter-base-semibold mb-base">
-                {t("product-general-section-metadata", "Metadata")}
-              </h2>
-              <MetadataForm form={nestedForm(form, "metadata")} />
+              <OrganizeForm form={nestedForm(form, "organize")}/>
             </div>
           </Modal.Content>
           <Modal.Footer>
             <div className="flex w-full justify-end gap-x-2">
               <Button
-                size="small"
-                variant="secondary"
-                type="button"
-                onClick={onReset}
+                  size="small"
+                  variant="secondary"
+                  type="button"
+                  onClick={onReset}
               >
                 {t("product-general-section-cancel", "Cancel")}
               </Button>
               <Button
-                size="small"
-                variant="primary"
-                type="submit"
-                disabled={!isDirty}
-                loading={updating}
+                  size="small"
+                  variant="primary"
+                  type="submit"
+                  disabled={!isDirty}
+                  loading={updating}
               >
-                {t("product-general-section-save", "Save")}
+              {t("product-general-section-save", "Save")}
               </Button>
             </div>
           </Modal.Footer>
@@ -166,19 +162,21 @@ const getDefaultValues = (product: Product): GeneralFormWrapper => {
       description: product.description || null,
     },
     organize: {
-      collection: product.collection
-        ? { label: product.collection.title, value: product.collection.id }
-        : null,
-      type: product.type
-        ? { label: product.type.value, value: product.type.id }
-        : null,
       tags: product.tags ? product.tags.map((t) => t.value) : null,
       categories: product.categories?.map((c) => c.id),
     },
-    discountable: {
-      value: product.discountable,
+    stockPrice: {
+      stock: product.variants[0].inventory_quantity,
+      price: product.variants[0].prices[0].amount / 100,
+      origin_country: product.origin_country
     },
-    metadata: getMetadataFormValues(product.metadata),
+    dimensions: {
+      height: product.height ? product.height / 10 : null,
+      width: product.width ? product.width / 10 : null,
+      length: product.length ? product.length / 10 : null,
+      weight: product.weight,
+      diameter: 0
+    }
   }
 }
 

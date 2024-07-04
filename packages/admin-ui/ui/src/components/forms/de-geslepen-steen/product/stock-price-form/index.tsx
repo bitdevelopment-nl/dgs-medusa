@@ -8,7 +8,7 @@ import {countries} from "../../../../../utils/countries";
 export type StockPriceFormType = {
     stock: number
     price: number,
-    origin_country: string
+    origin_country: string | null
 }
 
 type Props = {
@@ -40,9 +40,10 @@ const StockPriceForm = ({form}: Props) => {
                 placeholder="20"
                 prefix={<span className="pt-1">€</span>}
                 type="number"
+                step="0.1"
                 {...register(path("price"), {
                     validate: {
-                        positive: (v) => parseInt(v) >= 0,
+                        positive: (v) => parseFloat(v) >= 0,
                     },
                     setValueAs: (value) => value * 100,
                     required: false

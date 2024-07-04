@@ -1,9 +1,7 @@
 import { useMemo } from "react"
 
 import {
-  useAdminCollections,
   useAdminProductCategories,
-  useAdminProductTypes,
 } from "medusa-react"
 
 import { NestedMultiselectOption } from "../../../../domain/categories/components/multiselect"
@@ -15,11 +13,6 @@ import {
 
 const useOrganizeData = () => {
   const { isFeatureEnabled } = useFeatureFlag()
-  const { product_types } = useAdminProductTypes(undefined, {
-    staleTime: 0,
-    refetchOnWindowFocus: true,
-  })
-  const { collections } = useAdminCollections()
   const { product_categories: categories = [] } = useAdminProductCategories(
     {
       parent_category_id: "null",

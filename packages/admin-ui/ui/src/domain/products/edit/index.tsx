@@ -3,12 +3,10 @@ import { useNavigate, useParams } from "react-router-dom"
 import BackButton from "../../../components/atoms/back-button"
 import Spinner from "../../../components/atoms/spinner"
 import WidgetContainer from "../../../components/extensions/widget-container"
-import ProductAttributesSection from "../../../components/organisms/product-attributes-section"
 import ProductGeneralSection from "../../../components/organisms/product-general-section"
 import ProductMediaSection from "../../../components/organisms/product-media-section"
 import ProductRawSection from "../../../components/organisms/product-raw-section"
 import ProductThumbnailSection from "../../../components/organisms/product-thumbnail-section"
-import ProductVariantsSection from "../../../components/organisms/product-variants-section"
 import { useWidgets } from "../../../providers/widget-provider"
 import { getErrorStatus } from "../../../utils/get-error-status"
 
@@ -64,8 +62,6 @@ const Edit = () => {
         <div className="gap-x-base grid grid-cols-12">
           <div className="gap-y-xsmall col-span-8 flex flex-col">
             <ProductGeneralSection product={product} />
-            <ProductVariantsSection product={product} />
-            <ProductAttributesSection product={product} />
             {getWidgets("product.details.after").map((w, i) => {
               return (
                 <WidgetContainer
