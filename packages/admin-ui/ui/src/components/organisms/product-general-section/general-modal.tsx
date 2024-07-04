@@ -71,6 +71,7 @@ const GeneralModal = ({ product, open, onClose }: Props) => {
         length: data.dimensions.length || undefined,
         weight: data.dimensions.weight || undefined,
         width: data.dimensions.width || undefined,
+        diameter: data.dimensions.diameter || undefined,
         variants: [
           {
             id: product.variants[0].id,
@@ -175,7 +176,7 @@ const getDefaultValues = (product: Product): GeneralFormWrapper => {
       width: product.width ? product.width / 10 : null,
       length: product.length ? product.length / 10 : null,
       weight: product.weight,
-      diameter: 0
+      diameter: product.diameter ? product.diameter / 10 : null
     }
   }
 }
