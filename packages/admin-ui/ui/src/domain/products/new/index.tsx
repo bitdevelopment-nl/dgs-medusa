@@ -21,6 +21,8 @@ import {prepareImages} from "../../../utils/images"
 import {nestedForm} from "../../../utils/nested-form"
 import OrganizeForm, {OrganizeFormType} from "../../../components/forms/product/organize-form";
 import StockPriceForm, {StockPriceFormType} from "../../../components/forms/de-geslepen-steen/product/stock-price-form";
+import AddSalesChannelsForm, {AddSalesChannelsFormType} from "./add-sales-channels";
+import FeatureToggle from "../../../components/fundamentals/feature-toggle";
 
 type NewProductForm = {
     general: GeneralFormType,
@@ -28,7 +30,8 @@ type NewProductForm = {
     organize: OrganizeFormType,
     dimensions: DimensionsFormType
     thumbnail: ThumbnailFormType
-    media: MediaFormType
+    media: MediaFormType,
+    salesChannels: AddSalesChannelsFormType
 }
 
 type Props = {
@@ -219,6 +222,13 @@ const NewProduct = ({onClose}: Props) => {
                                     )}
                                 </p>
                                 <OrganizeForm form={nestedForm(form, "organize")}/>
+                                <FeatureToggle featureFlag="sales_channels">
+                                    <div className="mt-xlarge">
+                                        <AddSalesChannelsForm
+                                            form={nestedForm(form, "salesChannels")}
+                                        />
+                                    </div>
+                                </FeatureToggle>
                             </Accordion.Item>
                             <Accordion.Item title="Thumbnail" value="thumbnail">
                                 <p className="inter-base-regular mb-large text-grey-50">
@@ -283,7 +293,7 @@ const createPayload = (
         variants: [
             {
                 title: 'internal',
-                inventory_quantity: data.stockPrice.stock,
+                inventory_quantity: data.stockPrice.stock ?? 0,
                 prices: [
                     {
                         amount: data.stockPrice.price,
@@ -329,7 +339,6 @@ const createBlank = (): NewProductForm => {
             diameter: null,
         },
         organize: {
-            type: null,
             collection: null,
             categories: [],
             tags: []
@@ -344,20 +353,6 @@ const createBlank = (): NewProductForm => {
             images: [],
         },
     }
-}
-
-const getVariantPrices = (prices: PricesFormType) => {
-    const priceArray = prices.prices
-        .filter((price) => typeof price.amount === "number")
-        .map((price) => {
-            return {
-                amount: price.amount as number,
-                currency_code: price.region_id ? undefined : price.currency_code,
-                region_id: price.region_id || undefined,
-            }
-        })
-
-    return priceArray
 }
 
 export default NewProduct

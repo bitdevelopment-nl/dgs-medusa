@@ -174,10 +174,11 @@ const ProductDetails = ({product}: Props) => {
                 title="Lengte"
                 value={product.length ? `${product.length / 10} cm` : null}
             />
-            {/*<Detail*/}
-            {/*    title={t("product-general-section-diameter")}*/}
-            {/*value={product.diameter ? `${product.diameter / 10} cm` : null}*/}
-            {/*/>*/}
+            <Detail
+                title={t("product-general-section-diameter", "Diameter")}
+                // value={product.diameter ? `${product.diameter / 10} cm` : null}
+                value={null}
+            />
             <Detail
                 title="Gewicht"
                 value={product.weight ? `${product.weight} gram` : null}
@@ -190,6 +191,9 @@ const ProductDetails = ({product}: Props) => {
             {/*  title={t("product-general-section-collection", "Collection")}*/}
             {/*  value={product.collection?.title}*/}
             {/*/>*/}
+            <h2 className="inter-base-semibold">
+                {t("product-general-section-dimensions", "Categorisatie")}
+            </h2>
             {isFeatureEnabled(FeatureFlag.PRODUCT_CATEGORIES) && (
                 <Detail
                     title={t("product-general-section-category", "Category")}

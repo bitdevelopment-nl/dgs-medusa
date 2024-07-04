@@ -158,7 +158,7 @@
   "product-general-section-false": "False",
   "product-general-section-count_one": "{{count}}",
   "product-general-section-count_other": "{{count}}",
-  "product-general-section-sales-channels": "Sales channels",
+  "product-general-section-sales-channels": "Verkoop kanalen",
   "product-media-section-edit-media": "Edit Media",
   "product-media-section-upload-images-error": "Something went wrong while trying to upload images.",
   "product-media-section-file-service-not-configured": "You might not have a file service configured. Please contact your administrator",
