@@ -1,4 +1,4 @@
-import { ProductCategory } from "@medusajs/medusa"
+import {AdminPostProductCategoriesCategoryReq, AdminPostProductCategoriesReq, ProductCategory} from "@medusajs/medusa"
 import {
   adminProductCategoryKeys,
   useAdminCreateProductCategory,
@@ -23,6 +23,9 @@ import { Controller, useForm } from "react-hook-form"
 import { nestedForm } from "../../../utils/nested-form"
 import { TFunction } from "i18next"
 import { getDefaultCategoryValues } from "../utils"
+import ThumbnailForm, {ThumbnailFormType} from "../components/thumbnail-form";
+import {FormImage} from "../../../types/shared";
+import {prepareImages} from "../../../utils/images";
 
 export enum CategoryStatus {
   Active = "active",
@@ -58,7 +61,21 @@ type CreateProductCategoryProps = {
 }
 
 
-
+export type CategoryForm = {
+  name: string
+  handle: string | undefined
+  description: string | undefined
+  metadata: MetadataFormType
+  is_active: {
+    value: CategoryStatus
+    label: string
+  }
+  is_public: {
+    value: CategoryVisibility
+    label: string
+  }
+  thumbnail: ThumbnailFormType
+}
 
 export type CategoryFormData = {
   name: string
@@ -73,6 +90,7 @@ export type CategoryFormData = {
     value: CategoryVisibility
     label: string
   }
+  thumbnail: string | undefined
 }
 
 /**
@@ -84,7 +102,7 @@ function CreateProductCategory(props: CreateProductCategoryProps) {
   const notification = useNotification()
   const queryClient = useQueryClient()
 
-  const form = useForm<CategoryFormData>({
+  const form = useForm<CategoryForm>({
     defaultValues: getDefaultCategoryValues(t),
     mode: "onChange",
   })
@@ -103,15 +121,43 @@ function CreateProductCategory(props: CreateProductCategoryProps) {
 
   const submit = handleSubmit(async (data) => {
     try {
-      await createProductCategory({
+      const payload: AdminPostProductCategoriesReq = {
         name: data.name,
         handle: data.handle,
         description: data.description,
         is_active: data.is_active.value === CategoryStatus.Active,
         is_internal: data.is_public.value === CategoryVisibility.Private,
-        parent_category_id: parentCategory?.id ?? null,
-        metadata: getSubmittableMetadata(data.metadata),
-      })
+        metadata: getSubmittableMetadata(data.metadata)
+      };
+
+      if (data.thumbnail.image) {
+        let preppedImage: FormImage;
+        try {
+          const preppedImages = await prepareImages([data.thumbnail.image])
+          preppedImage = preppedImages[0];
+        } catch (error) {
+          let errorMessage = t(
+              "new-something-went-wrong-while-trying-to-upload-images",
+              "Something went wrong while trying to upload images."
+          )
+          const response = (error as any).response as Response
+
+          if (response.status === 500) {
+            errorMessage = errorMessage + " " + t(
+                "new-no-file-service-configured",
+                "You might not have a file service configured. Please contact your administrator"
+            )
+          }
+
+          notification(t("new-error", "Error"), errorMessage, "error");
+          return
+        }
+
+        // @ts-ignore DGS-custom
+        payload.thumbnail = preppedImage.url;
+      }
+
+      await createProductCategory(payload)
       // TODO: temporary here, investigate why `useAdminCreateProductCategory` doesn't invalidate this
       await queryClient.invalidateQueries(adminProductCategoryKeys.lists())
       closeModal()
@@ -158,21 +204,21 @@ function CreateProductCategory(props: CreateProductCategoryProps) {
         <div className="small:w-4/5 medium:w-7/12 large:w-6/12 my-16 max-w-[700px]">
           <h1 className="inter-xlarge-semibold text-grey-90 pb-6">
             {parentCategory
-              ? t("modals-add-category-to", "Add category to {{name}}", {
+                ? t("modals-add-category-to", "Add category to {{name}}", {
                   name: parentCategory.name,
                 })
-              : t("modals-add-category", "Add category")}
+                : t("modals-add-category", "Add category")}
           </h1>
 
           {parentCategory && (
-            <div className="mb-6">
-              <TreeCrumbs
-                nodes={categories}
-                currentNode={parentCategory}
-                showPlaceholder={true}
-                placeholderText={name || "New"}
-              />
-            </div>
+              <div className="mb-6">
+                <TreeCrumbs
+                    nodes={categories}
+                    currentNode={parentCategory}
+                    showPlaceholder={true}
+                    placeholderText={name || "New"}
+                />
+              </div>
           )}
 
           <h4 className="inter-large-semibold text-grey-90 pb-1">
@@ -181,97 +227,103 @@ function CreateProductCategory(props: CreateProductCategoryProps) {
 
           <div className="mb-8 flex justify-between gap-6">
             <InputField
-              required
-              label={t("modals-name", "Name") as string}
-              type="string"
-              className="w-[338px]"
-              placeholder={
-                t(
-                  "modals-give-this-category-a-name",
-                  "Give this category a name"
-                ) as string
-              }
-              {...register("name", { required: true })}
+                required
+                label={t("modals-name", "Name") as string}
+                type="string"
+                className="w-[338px]"
+                placeholder={
+                  t(
+                      "modals-give-this-category-a-name",
+                      "Give this category a name"
+                  ) as string
+                }
+                {...register("name", {required: true})}
             />
 
             <InputField
-              label={t("modals-handle", "Handle") as string}
-              type="string"
-              className="w-[338px]"
-              placeholder={
-                t("modals-custom-handle", "Custom handle") as string
-              }
-              {...register("handle")}
+                label={t("modals-handle", "Handle") as string}
+                type="string"
+                className="w-[338px]"
+                placeholder={
+                  t("modals-custom-handle", "Custom handle") as string
+                }
+                {...register("handle")}
             />
           </div>
 
           <div className="mb-8">
             <TextArea
-              label={t("modals-description", "Description")}
-              placeholder={
-                t(
-                  "modals-give-this-category-a-description",
-                  "Give this category a description"
-                ) as string
-              }
-              {...register("description")}
+                label={t("modals-description", "Description")}
+                placeholder={
+                  t(
+                      "modals-give-this-category-a-description",
+                      "Give this category a description"
+                  ) as string
+                }
+                {...register("description")}
             />
           </div>
 
           <div className="mb-8 flex justify-between gap-6">
             <div className="flex-1">
               <Controller
-                name={"is_active"}
-                control={control}
-                rules={{ required: true }}
-                render={({ field }) => {
-                  return (
-                    <NextSelect
-                      {...field}
-                      label={t("modals-status", "Status") as string}
-                      placeholder="Choose status"
-                      options={statusOptions(t)}
-                      value={
-                        statusOptions(t)[
-                          field.value?.value === CategoryStatus.Active ? 0 : 1
-                        ]
-                      }
-                    />
-                  )
-                }}
+                  name={"is_active"}
+                  control={control}
+                  rules={{required: true}}
+                  render={({field}) => {
+                    return (
+                        <NextSelect
+                            {...field}
+                            label={t("modals-status", "Status") as string}
+                            placeholder="Choose status"
+                            options={statusOptions(t)}
+                            value={
+                              statusOptions(t)[
+                                  field.value?.value === CategoryStatus.Active ? 0 : 1
+                                  ]
+                            }
+                        />
+                    )
+                  }}
               />
             </div>
 
             <div className="flex-1">
               <Controller
-                name={"is_public"}
-                control={control}
-                rules={{ required: true }}
-                render={({ field }) => {
-                  return (
-                    <NextSelect
-                      {...field}
-                      label={
-                        t("modals-visibility", "Visibility") as string
-                      }
-                      placeholder="Choose visibility"
-                      options={visibilityOptions(t)}
-                      value={
-                        visibilityOptions(t)[
-                          field.value.value === CategoryVisibility.Public ? 0 : 1
-                        ]
-                      }
-                    />
-                  )
-                }}
+                  name={"is_public"}
+                  control={control}
+                  rules={{required: true}}
+                  render={({field}) => {
+                    return (
+                        <NextSelect
+                            {...field}
+                            label={
+                              t("modals-visibility", "Visibility") as string
+                            }
+                            placeholder="Choose visibility"
+                            options={visibilityOptions(t)}
+                            value={
+                              visibilityOptions(t)[
+                                  field.value.value === CategoryVisibility.Public ? 0 : 1
+                                  ]
+                            }
+                        />
+                    )
+                  }}
               />
             </div>
+          </div>
+          <div className="mt-small mb-xlarge">
+            <h2 className="inter-base-semibold mb-base">
+              {t("collection-modal-thumbnail", "Thumbnail")}
+            </h2>
+            <ThumbnailForm form={nestedForm(form, "thumbnail")}/>
           </div>
           <div className="mt-xlarge">
             <h2 className="inter-base-semibold mb-base">
               {t("collection-modal-metadata", "Metadata")}
             </h2>
-            <MetadataForm form={nestedForm(form, "metadata")} />
+            <MetadataForm form={nestedForm(form, "metadata")}/>
           </div>
         </div>
       </FocusModal.Main>

@@ -1,6 +1,6 @@
 import { ProductCategory } from "@medusajs/medusa"
 import { TFunction } from "i18next"
-import { CategoryFormData, CategoryStatus, CategoryVisibility } from "../modals/add-product-category"
+import { CategoryForm, CategoryStatus, CategoryVisibility } from "../modals/add-product-category"
 export const flattenCategoryTree = (rootCategories) => {
   return rootCategories.reduce((acc, category) => {
     if (category?.category_children.length) {
@@ -33,7 +33,7 @@ export const getAncestors = (targetNode, nodes, acc = []) => {
   return acc
 }
 
-export const getDefaultCategoryValues = (t: TFunction, category?: ProductCategory): CategoryFormData => {
+export const getDefaultCategoryValues = (t: TFunction, category?: ProductCategory): CategoryForm => {
   return {
     name: category?.name || "",
     handle: category?.handle || "",
@@ -59,5 +59,8 @@ export const getDefaultCategoryValues = (t: TFunction, category?: ProductCategor
         ? t("modals-private", "Private") as string
         : t("modals-public", "Public") as string,
     },
+    thumbnail: {
+      image: category && category.thumbnail ? { url: category.thumbnail } : null
+    }
   }
 }
