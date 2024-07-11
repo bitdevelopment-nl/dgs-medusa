@@ -3,15 +3,8 @@
   "private": true,
   "workspaces": {
     "packages": [
-      "packages/medusa",
-      "packages/medusa-js",
-      "packages/medusa-react",
-      "packages/*",
-      "packages/admin-next/*",
-      "packages/design-system/*",
-      "packages/generated/*",
-      "packages/oas/*",
-      "integration-tests/**/*"
+      "packages/admin",
+      "packages/admin-ui"
     ]
   },
   "devDependencies": {
