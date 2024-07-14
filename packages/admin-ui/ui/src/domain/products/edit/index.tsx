@@ -36,6 +36,7 @@ const Edit = () => {
                         await refetch()
                     }
                 })
+            return;
         }
 
         if (product?.variants.length === 0) {
