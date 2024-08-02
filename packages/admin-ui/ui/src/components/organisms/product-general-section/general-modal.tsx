@@ -196,7 +196,7 @@ const getDefaultValues = (product: Product): GeneralFormWrapper => {
             width: product.width ? product.width / 10 : null,
             length: product.length ? product.length / 10 : null,
             weight: product.weight,
-            diameter: product.diameter ? product.diameter / 10 : null
+            diameter: product.diameter ?? null
         }
     }
 }

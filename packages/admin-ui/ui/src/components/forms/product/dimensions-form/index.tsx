@@ -14,9 +14,15 @@ type DimensionsFormProps = {
     form: NestedForm<DimensionsFormType>
 }
 
-const validateDimension = {
-    positive: (v: string) => parseInt(v) >= 0,
+const validateDimensionInCentimeter = {
+    positive: (v: string) => parseInt(v.toString().replace(',', '.')) >= 0,
 };
+
+const validateDimensionInMillimeter = {
+    positive: (v: string) => (new RegExp('[.,]', 'g')).exec(v) === null && parseInt(v) >= 0,
+};
+
+
 
 const validateWeight = {
     positive: (v: string) => parseInt(v) >= 0,
@@ -41,7 +47,7 @@ const DimensionsForm = ({form}: DimensionsFormProps) => {
                 placeholder="100..."
                 type="text"
                 {...register(path("width"), {
-                    validate: validateDimension,
+                    validate: validateDimensionInCentimeter,
                     setValueAs: (value) => value * 10,
                 })}
                 errors={errors}
@@ -51,7 +57,7 @@ const DimensionsForm = ({form}: DimensionsFormProps) => {
                 placeholder="100..."
                 type="text"
                 {...register(path("length"), {
-                    validate: validateDimension,
+                    validate: validateDimensionInCentimeter,
                     setValueAs: (value) => value * 10,
                 })}
                 errors={errors}
@@ -61,18 +67,18 @@ const DimensionsForm = ({form}: DimensionsFormProps) => {
                 placeholder="100..."
                 type="text"
                 {...register(path("height"), {
-                    validate: validateDimension,
+                    validate: validateDimensionInCentimeter,
                     setValueAs: (value) => value * 10,
                 })}
                 errors={errors}
             />
             <InputField
-                label="Diameter (in cm)"
+                label="Diameter (in mm)"
                 placeholder="100..."
                 type="text"
                 {...register(path("diameter"), {
-                    validate: validateDimension,
-                    setValueAs: (value) => value * 10,
+                    validate: validateDimensionInMillimeter,
+                    setValueAs: (value) => value * 1,
                 })}
                 errors={errors}
             />
