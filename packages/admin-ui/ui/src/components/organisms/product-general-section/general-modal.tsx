@@ -84,6 +84,7 @@ const GeneralModal = ({product, open, onClose}: Props) => {
                                 }
                             ],
                             allow_backorder: false,
+                            origin_country: data.stockPrice.origin_country !== null ? data.stockPrice.origin_country : undefined,
                             options: [
                                 {
                                     value: 'internal'

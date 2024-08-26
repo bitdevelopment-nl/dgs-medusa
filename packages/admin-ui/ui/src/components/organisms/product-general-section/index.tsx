@@ -156,6 +156,10 @@ const ProductDetails = ({product}: Props) => {
                         title={"Prijs"}
                         value={`€ ${(product.variants[0].prices[0].amount / 100).toFixed(2)}`}
                     />
+                    <Detail
+                        title={"Land van herkomst"}
+                        value={product.variants[0].origin_country}
+                    />
                 </>
             )}
 

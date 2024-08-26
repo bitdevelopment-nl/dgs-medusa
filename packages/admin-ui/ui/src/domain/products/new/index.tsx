@@ -301,6 +301,7 @@ const createPayload = (
                         currency_code: 'eur'
                     }
                 ],
+                origin_country: data.stockPrice.origin_country !== null ? data.stockPrice.origin_country : undefined,
                 allow_backorder: false,
                 options: [
                     {
