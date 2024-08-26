@@ -39,13 +39,12 @@ const StockPriceForm = ({form}: Props) => {
                 label="Prijs"
                 placeholder="20"
                 prefix={<span className="pt-1">€</span>}
-                type="number"
-                step="0.1"
+                type="text"
                 {...register(path("price"), {
                     validate: {
-                        positive: (v) => parseFloat(v) >= 0,
+                        positive: (v) => v >= 0,
                     },
-                    setValueAs: (value) => value * 100,
+                    setValueAs: (value: string) => parseFloat(value.replace(',', '.')) * 100,
                     required: false
                 })}
                 errors={errors}
@@ -62,6 +61,8 @@ const StockPriceForm = ({form}: Props) => {
                             isSearchable
                             isClearable
                             {...field}
+                            value={countryOptions.find((c) => field.value === c.value)}
+                            onChange={(value) => field.onChange(value.value)}
                         />
                     )
                 }}
