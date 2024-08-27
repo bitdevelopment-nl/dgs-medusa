@@ -100,7 +100,7 @@ const GeneralModal = ({product, open, onClose}: Props) => {
                             prices: [
                                 {
                                     id: product.variants[0].prices[0].id ?? null,
-                                    amount: data.stockPrice.price,
+                                    amount: Math.floor(data.stockPrice.price),
                                     currency_code: product.variants[0].prices[0].currency_code ?? 'eur',
                                 }
                             ],
