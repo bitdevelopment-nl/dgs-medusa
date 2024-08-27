@@ -23,6 +23,8 @@ const StockPriceForm = ({form}: Props) => {
         value: c.alpha2,
     }))
 
+    console.log(form.getValues());
+
     return (
         <div className="mb-large gap-x-large gap-y-large grid grid-cols-2">
             <InputField
@@ -44,7 +46,7 @@ const StockPriceForm = ({form}: Props) => {
                     validate: {
                         positive: (v) => v >= 0,
                     },
-                    setValueAs: (value: string) => parseFloat(value.replace(',', '.')) * 100,
+                    setValueAs: (value: string|undefined) => parseFloat(value?.toString()?.replace(',', '.') ?? "") * 100,
                     required: false
                 })}
                 errors={errors}
