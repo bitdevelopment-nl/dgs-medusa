@@ -71,6 +71,7 @@ const NewProduct = ({onClose}: Props) => {
 
     const onSubmit = (publish = true) =>
         handleSubmit(async (data) => {
+            console.log(data);
             const payload = createPayload(
                 data,
                 publish,

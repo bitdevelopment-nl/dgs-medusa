@@ -13,22 +13,13 @@ type DimensionsFormProps = {
     form: NestedForm<DimensionsFormType>
 }
 
-const validateDimensionInCentimeter = (name: string) => ({
-    positive: (v: number) => v >= 0 || `${name} moet groter of gelijk zijn dan 0`,
-});
+const parseCentimeterInput = (value: string | undefined): number|null => value !== undefined && value !== ""
+    ? parseFloat(value?.toString()?.replace(',', '.') ?? "") * 10
+    : null;
 
-const validateDimensionInMillimeter = (name: string) => ({
-    positive: (v: number) =>
-        (new RegExp('[.,]', 'g')).exec(v.toString()) === null && v >= 0
-        || `${name} moet groter of gelijk zijn dan 0`,
-});
-
-const validateWeight = {
-    positive: (v: number) => v >= 0,
-};
-
-const parseCentimeterInput = (value: string | undefined): number => parseFloat(value?.toString()?.replace(',', '.') ?? "") * 10;
-const parseMillimeterInput = (value: string | undefined): number => parseInt(value ?? "");
+const parseMillimeterInput = (value: string | undefined): number|null => value !== undefined && value !== ""
+    ? parseInt(value ?? "")
+    : null;
 
 /**
  * Re-usable nested form used to submit dimensions information for products and their variants.
@@ -49,7 +40,8 @@ const DimensionsForm = ({form}: DimensionsFormProps) => {
                 placeholder="100..."
                 type="text"
                 {...register(path("width"), {
-                    validate: validateDimensionInCentimeter('Breedte'),
+                    required: false,
+                    min: 1,
                     setValueAs: parseCentimeterInput,
                 })}
                 errors={errors}
@@ -59,7 +51,8 @@ const DimensionsForm = ({form}: DimensionsFormProps) => {
                 placeholder="100..."
                 type="text"
                 {...register(path("length"), {
-                    validate: validateDimensionInCentimeter('Lengte'),
+                    required: false,
+                    min: 1,
                     setValueAs: parseCentimeterInput,
                 })}
                 errors={errors}
@@ -69,7 +62,8 @@ const DimensionsForm = ({form}: DimensionsFormProps) => {
                 placeholder="100..."
                 type="text"
                 {...register(path("height"), {
-                    validate: validateDimensionInCentimeter('Hoogte'),
+                    required: false,
+                    min: 1,
                     setValueAs: parseCentimeterInput,
                 })}
                 errors={errors}
@@ -79,8 +73,10 @@ const DimensionsForm = ({form}: DimensionsFormProps) => {
                 placeholder="100..."
                 type="text"
                 {...register(path("diameter"), {
-                    validate: validateDimensionInMillimeter('Diameter'),
+                    required: false,
+                    min: 1,
                     setValueAs: parseMillimeterInput,
+                    pattern: /([0-9]+)/
                 })}
                 errors={errors}
             />
@@ -89,7 +85,8 @@ const DimensionsForm = ({form}: DimensionsFormProps) => {
                 placeholder="100..."
                 type="text"
                 {...register(path("weight"), {
-                    validate: validateWeight,
+                    min: 1,
+                    required: true,
                     setValueAs: (value) => parseInt(value) ?? 0,
                     pattern: /([0-9]+)/
                 })}

@@ -23,8 +23,6 @@ const StockPriceForm = ({form}: Props) => {
         value: c.alpha2,
     }))
 
-    console.log(form.getValues());
-
     return (
         <div className="mb-large gap-x-large gap-y-large grid grid-cols-2">
             <InputField
@@ -32,6 +30,7 @@ const StockPriceForm = ({form}: Props) => {
                 placeholder="1"
                 type="number"
                 {...register(path("stock"), {
+                    required: true,
                     valueAsNumber: true,
                     min: FormValidator.nonNegativeNumberRule('stock')
                 })}
@@ -46,7 +45,7 @@ const StockPriceForm = ({form}: Props) => {
                     validate: {
                         positive: (v) => v >= 0,
                     },
-                    setValueAs: (value: string|undefined) => parseFloat(value?.toString()?.replace(',', '.') ?? "") * 100,
+                    setValueAs: (value: string|undefined) => value !== undefined ? Math.floor(parseFloat(value?.toString()?.replace(',', '.') ?? "") * 100) : undefined,
                     required: false
                 })}
                 errors={errors}
