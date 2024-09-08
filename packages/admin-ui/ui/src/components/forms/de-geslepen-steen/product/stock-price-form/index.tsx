@@ -4,6 +4,7 @@ import InputField from "../../../../molecules/input";
 import {NextSelect} from "../../../../molecules/select/next-select";
 import {Controller} from "react-hook-form";
 import {countries} from "../../../../../utils/countries";
+import {useTranslation} from "react-i18next";
 
 export type StockPriceFormType = {
     stock: number
@@ -16,10 +17,11 @@ type Props = {
 }
 
 const StockPriceForm = ({form}: Props) => {
+    const { i18n } = useTranslation();
     const { control, register, path, formState: {errors} } = form
 
     const countryOptions = countries.map((c) => ({
-        label: c.name,
+        label: (new Intl.DisplayNames([i18n.language], { type: "region" })).of(c.alpha2),
         value: c.alpha2,
     }))
 
