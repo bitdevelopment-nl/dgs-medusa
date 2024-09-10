@@ -171,7 +171,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ order, reservations }) => {
   return (
     <BodyCard
       className={"h-auto min-h-0 w-full"}
-      title="Summary"
+      title="Samenvatting"
       status={
         isFeatureEnabled("inventoryService") &&
         Array.isArray(reservations) && (

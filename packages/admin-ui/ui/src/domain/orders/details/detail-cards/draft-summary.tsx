@@ -144,7 +144,7 @@ const DraftSummaryCard: React.FC<DraftSummaryCardProps> = ({ order }) => {
   return (
     <BodyCard
       className={"mb-4 h-auto min-h-0 w-full"}
-      title="Summary"
+      title="Samenvatting"
       status={
         isFeatureEnabled("inventoryService") &&
         Array.isArray(reservations) && (
