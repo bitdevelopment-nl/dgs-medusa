@@ -68,7 +68,7 @@ const ProductAttributesSection = ({ product }: Props) => {
             <Attribute
               attribute={t(
                 "product-attributes-section-country-of-origin",
-                "Country of origin"
+                "Land van herkomst"
               )}
               value={product.origin_country}
             />

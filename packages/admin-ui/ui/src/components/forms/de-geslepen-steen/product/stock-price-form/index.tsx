@@ -58,8 +58,8 @@ const StockPriceForm = ({form}: Props) => {
                 render={({ field }) => {
                     return (
                         <NextSelect
-                            label="Country of origin"
-                            placeholder="Choose a country"
+                            label="Land van herkomst"
+                            placeholder="Kies een land"
                             options={countryOptions}
                             isSearchable
                             isClearable
