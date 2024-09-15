@@ -47,7 +47,7 @@ const StockPriceForm = ({form}: Props) => {
                     validate: {
                         positive: (v) => v >= 0,
                     },
-                    setValueAs: (value: string|undefined) => value !== undefined ? Math.floor(parseFloat(value?.toString()?.replace(',', '.') ?? "") * 100) : undefined,
+                    setValueAs: (value: string|undefined) => value !== undefined ? Math.round(parseFloat(value?.toString()?.replace(',', '.') ?? "") * 100) : undefined,
                     required: false
                 })}
                 errors={errors}

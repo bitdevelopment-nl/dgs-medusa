@@ -42,7 +42,7 @@ const GeneralModal = ({product, open, onClose}: Props) => {
 
     useEffect(() => {
         reset(getDefaultValues(product))
-    }, [product, reset])
+    }, [product, reset, open])
 
     const onReset = () => {
         reset(getDefaultValues(product))
@@ -100,7 +100,7 @@ const GeneralModal = ({product, open, onClose}: Props) => {
                             prices: [
                                 {
                                     id: product.variants[0].prices[0].id ?? null,
-                                    amount: Math.floor(data.stockPrice.price),
+                                    amount: data.stockPrice.price,
                                     currency_code: product.variants[0].prices[0].currency_code ?? 'eur',
                                 }
                             ],
