@@ -94,14 +94,21 @@ function ProductCategoryListItemDetails(
               {hasChildren && <FolderOpenIcon color="#889096" size={18} />}
               {!hasChildren && <TagIcon color="#889096" size={18} />}
             </div>
-            <span
-              className={clsx("ml-2 select-none text-xs font-medium", {
-                "font-normal text-gray-400": !hasChildren,
+            {item?.thumbnail && (
+                <div className="ml-[20px] flex w-[32px] items-center justify-center">
+                    <img
+                        src={item?.thumbnail}
+                        className="rounded-rounded object-cover"
+                    />
+                </div>
+            )}
+              <span
+                  className={clsx("ml-2 select-none text-xs font-medium", {
+                      "font-normal text-gray-400": !hasChildren,
               })}
             >
               {item.name}
             </span>
-
             <div className="flex w-[64px] items-center justify-center">
               {!item.is_active && (
                 <TooltipIcon
