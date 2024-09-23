@@ -24,6 +24,9 @@ const ThumbnailForm = ({form}: Props) => {
                 name: file.name,
                 size: file.size,
                 nativeFile: file,
+            }, {
+                shouldDirty: true,
+                shouldTouch: true
             });
         }
     }

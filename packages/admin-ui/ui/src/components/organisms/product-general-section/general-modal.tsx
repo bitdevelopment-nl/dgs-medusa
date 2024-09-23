@@ -34,6 +34,8 @@ const GeneralModal = ({product, open, onClose}: Props) => {
         defaultValues: getDefaultValues(product),
     })
 
+    console.log(getDefaultValues(product), product);
+
     const {
         formState: {isDirty},
         handleSubmit,
@@ -97,6 +99,7 @@ const GeneralModal = ({product, open, onClose}: Props) => {
                         {
                             id: product.variants[0].id ?? null,
                             inventory_quantity: data.stockPrice.stock,
+                            origin_country: data.stockPrice.origin_country !== null ? data.stockPrice.origin_country : undefined,
                             prices: [
                                 {
                                     id: product.variants[0].prices[0].id ?? null,
@@ -190,7 +193,7 @@ const getDefaultValues = (product: Product): GeneralFormWrapper => {
         stockPrice: {
             stock: product.variants.length ? product.variants[0].inventory_quantity : 1,
             price: product.variants.length ? product.variants[0].prices[0].amount / 100 : 0,
-            origin_country: product.origin_country
+            origin_country: product.variants.length ? product.variants[0].origin_country : null,
         },
         dimensions: {
             height: product.height ? product.height / 10 : null,
