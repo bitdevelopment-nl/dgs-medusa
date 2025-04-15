@@ -71,7 +71,6 @@ const NewProduct = ({onClose}: Props) => {
 
     const onSubmit = (publish = true) =>
         handleSubmit(async (data) => {
-            console.log(data);
             const payload = createPayload(
                 data,
                 publish,
@@ -276,6 +275,7 @@ const createPayload = (
         weight: data.dimensions.weight || undefined,
         width: data.dimensions.width || undefined,
         diameter: data.dimensions.diameter || undefined,
+        purchase_price: data.stockPrice.purchase_price || undefined,
         hs_code: undefined, // unused
         mid_code: undefined, // unused
         type:  undefined, // unused

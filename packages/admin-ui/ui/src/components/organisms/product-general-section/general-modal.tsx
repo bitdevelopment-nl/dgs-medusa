@@ -74,6 +74,7 @@ const GeneralModal = ({product, open, onClose}: Props) => {
                 weight: data.dimensions.weight || undefined,
                 width: data.dimensions.width || undefined,
                 diameter: data.dimensions.diameter || undefined,
+                purchase_price: data.stockPrice.purchase_price || undefined,
                 variants: product.variants.length === 0
                     ? [
                         {
@@ -194,6 +195,7 @@ const getDefaultValues = (product: Product): GeneralFormWrapper => {
             stock: product.variants.length ? product.variants[0].inventory_quantity : 1,
             price: product.variants.length ? product.variants[0].prices[0].amount / 100 : 0,
             origin_country: product.variants.length ? product.variants[0].origin_country : null,
+            purchase_price: product.purchase_price ? product.purchase_price / 100 : 0,
         },
         dimensions: {
             height: product.height ? product.height / 10 : null,

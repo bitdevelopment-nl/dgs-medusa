@@ -163,6 +163,13 @@ const ProductDetails = ({product}: Props) => {
                 </>
             )}
 
+            {product.purchase_price && (
+                <Detail
+                    title={"Inkoopprijs"}
+                    value={`€ ${(product.purchase_price / 100).toFixed(2)}`}
+                />
+            )}
+
             <h2 className="inter-base-semibold">
                 {t("product-general-section-dimensions", "Dimensions")}
             </h2>

@@ -9,6 +9,7 @@ import {useTranslation} from "react-i18next";
 export type StockPriceFormType = {
     stock: number
     price: number,
+    purchase_price: number,
     origin_country: string | null
 }
 
@@ -69,6 +70,20 @@ const StockPriceForm = ({form}: Props) => {
                         />
                     )
                 }}
+            />
+            <InputField
+                label="Inkoopprijs"
+                placeholder="20"
+                prefix={<span className="pt-1">€</span>}
+                type="text"
+                {...register(path("purchase_price"), {
+                    validate: {
+                        positive: (v) => v >= 0,
+                    },
+                    setValueAs: (value: string|undefined) => value !== undefined ? Math.round(parseFloat(value?.toString()?.replace(',', '.') ?? "") * 100) : undefined,
+                    required: false
+                })}
+                errors={errors}
             />
         </div>
     );
